@@ -468,9 +468,13 @@ no_gsub_enum:
       int is_regex_val_arg = !is_interp_arg && argc >= 1 && comp_ntype(c, argv[0]) == TY_REGEX
                              && a0nt && !sp_streq(a0nt, "RegularExpressionNode")
                              && !ty_is_object(rt);
-      /* a boxed receiver's match? that a class answers too (StringScanner's)
-         is the boxed dispatch's, as for a literal pattern above */
-      int poly_claimed = rt == TY_POLY && sp_streq(name, "match?") && poly_name_user_claimed(c, name, argc);
+      /* a boxed receiver's match? or match that a class answers too
+         (StringScanner's match?, OptionParser::Completion's match) is the
+         boxed dispatch's, as for a literal pattern above: the String arm's
+         raw MatchData went into the call's boxed slot */
+      int poly_claimed = rt == TY_POLY &&
+                         (sp_streq(name, "match?") || sp_streq(name, "match")) &&
+                         poly_name_user_claimed(c, name, argc);
       /* Only the match family is answered below. The pattern's setup goes
          ahead of the statement as it is emitted, so building it for any other
          name (sub, gsub, scan, ...) and then declining left it there: an
