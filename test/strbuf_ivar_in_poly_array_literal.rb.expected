@@ -1,0 +1,3 @@
+"-k secret 1"
+["-k", "secret", 2]
+["rest"]
